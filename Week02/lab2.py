@@ -22,9 +22,11 @@ def main():
     # Determine the winer
     if player_choice == computer_choice:
         print("It's a tie!")
-            
-
+    elif (player_choice == 0 and computer_choice==2) or \
+        (player_choice == 1 and computer_choice == 0) or \
+        (player_choice == 2 and computer_choice == 1):
+        print("Player wins!")
 
 # Run the game
-if __name__ == "main":
+if __name__ == "__main__":
     main()
