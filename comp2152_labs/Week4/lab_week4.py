@@ -1,7 +1,17 @@
-# Import the random library to use for the dice later
+# Import the random library to use for dice rolls and loot selection
 import random
 
-# Hero's Attack Functions
+# Q1: Define Monster's Special Powers
+monster_powers = {
+    "Fire Magic": 2,       # Strength of 2
+    "Freeze Time": 4,      # Strength of 4
+    "Super Hearing": 6     # Strength of 6
+}
+
+# Q4: Define an empty array for the belt (stores loot collected by the player)
+belt = []
+
+# Hero's Attack Function
 def hero_attacks(combat_strength, m_health_points):
     ascii_image = """
                                 @@   @@ 
@@ -32,7 +42,6 @@ def hero_attacks(combat_strength, m_health_points):
         print("You have reduced the monster's health to " + str(m_health_points))
     return m_health_points
 
-
 # Monster's Attack Function
 def monster_attacks(m_combat_strength, health_points):
     ascii_image2 = """                                                                 
@@ -61,132 +70,67 @@ def monster_attacks(m_combat_strength, health_points):
         print("The monster has reduced your health to " + str(health_points))
     return health_points
 
+# Q2: Roll for Monster's Magic Power
+input("\nPress Enter to roll for the monster's magic power...")
+monster_magic = random.choice(list(monster_powers.keys()))  # Selects a random power
 
-# Game
-# Define The number of lives for the Hero and Monster
-numLives = 10  # number of player's lives remaining
-mNumLives = 12  # number of monster's lives remaining
+# Q3: Update Monster's Combat Strength based on rolled power (max limit is 6)
+m_combat_strength = random.randint(1, 6)  # Initial strength
+m_combat_strength = min(6, m_combat_strength + monster_powers[monster_magic])
+print(f"The monster's new combat strength is {m_combat_strength} using {monster_magic} power.")
 
-# Define the Dice
-diceOptions = list(range(1, 7))
-# Define the Weapons
-weapons = ["Fist", "Knife", "Club", "Gun", "Bomb", "Nuclear Bomb"]
-
-# Print out the weapons using a for loop
-for weapon in weapons:
-    print(weapon)
-
-# Define the Loot
+# Q5 & Q6: Player collects loot (first and second items)
 loot_options = ["Health Potion", "Poison Potion", "Secret Note", "Leather Boots", "Flimsy Gloves"]
 good_loot_options = ["Health Potion", "Leather Boots"]
 bad_loot_options = ["Poison Potion"]
 
-# Lab04 - Q4
-belt = []
+print("\nYou found a loot bag! Rolling for 2 loot items...")
+for _ in range(2):  # Rolls twice for two loot items
+    input("Press Enter to roll for loot...")
+    loot_item = random.choice(loot_options)
+    loot_options.remove(loot_item)  # Remove item from available loot
+    belt.append(loot_item)  # Store in player's belt
+print(f"Your loot belt: {belt}")
 
-# Lab04 - Q1
-# Define the Monster Power
-monster_power = {
-    "Fire Magic": 2,
-    "Freezing Time": 4,
-    "Super Hearing": 6,
-}
+# Q7: Organizing the Loot Belt alphabetically
+print("\nOrganizing your loot...")
+belt.sort()
+print(f"Organized loot belt: {belt}")
 
-# Define the number of stars awarded to the Player
-num_stars = 0
+# Q8: Using the first loot item and applying its effects
+print("\nA monster is approaching! You must use your first loot item.")
+used_item = belt.pop(0)  # Remove and use the first item in the belt
 
-# Use a While Loop to get valid input for Hero and Monster's Combat Strength
-i = 0
+# Q8: Adjust player's health based on the loot effect
+health_points = random.randint(1, 6)  # Initial health
+if used_item in good_loot_options:
+    health_points = min(6, health_points + 2)  # Max health is 6
+    print(f"You used {used_item} and gained health. Your health is now {health_points}.")
+elif used_item in bad_loot_options:
+    health_points = max(0, health_points - 2)  # Min health is 0
+    print(f"You used {used_item} and lost health. Your health is now {health_points}.")
+else:
+    print(f"{used_item} did not provide any advantage.")
 
-while i in range(5):
-    combat_strength = input("Enter your combat Strength (1-6): ")
-    m_combat_strength = input("Enter the monster's combat Strength (1-6): ")
+# Compare Player vs Monster's strength
+print(f"\nPlayer strength: {health_points}, Monster strength: {m_combat_strength}")
+print("--- You are matched in strength:", health_points == m_combat_strength)
+print("--- You have a strong player:", (health_points + m_combat_strength) >= 15)
 
-    # Validate input: Check if the string inputted is numeric
-    if (not combat_strength.isnumeric()) or (not m_combat_strength.isnumeric()):
-        # If one of the inputs are invalid, print error message and halt
-        print("One or more invalid inputs. Player needs to enter integer numbers for Combat Strength")
-        i = i + 1
-        continue
-
-    # Note: Now safe to cast combat_strength to integer
-    # Validate input: Check if the string inputted is a number between 1-6
-    elif (int(combat_strength) not in range(1, 7)) or (int(m_combat_strength)) not in range(1, 7):
-        print("Enter a valid integer between 1 and 6 only")
-        i = i + 1
-        continue
-
-    # Break out of while loop if input was valid
-    else:
+# Fight Sequence Begins
+print("\nBattle begins!")
+while health_points > 0 and m_combat_strength > 0:
+    input("\nPress Enter to attack the monster...")
+    m_combat_strength = hero_attacks(health_points, m_combat_strength)
+    
+    if m_combat_strength == 0:
+        print("\nThe hero has won the battle! Hero receives three stars.")
         break
 
-# Input was valid - broke out of while loop
-combat_strength = int(combat_strength)
-m_combat_strength = int(m_combat_strength)
+    input("\nPress Enter to defend against the monster's attack...")
+    health_points = monster_attacks(m_combat_strength, health_points)
 
-# Roll for weapon
-input("Roll the dice for your weapon (Press enter)")
-weaponRoll = random.choice(diceOptions)
-
-# Max out the combat strength at 6
-combat_strength = min(6, (combat_strength + weaponRoll))
-print("The hero\'s weapon is " + str(weapons[weaponRoll - 1]))
-
-# Weapon Roll Analysis
-input("Analyze the Weapon roll (Press enter)")
-if weaponRoll <= 2:
-    print("--- You rolled a weak weapon, friend")
-elif weaponRoll <= 4:
-    print("--- Your weapon is meh")
-else:
-    print("--- Nice weapon, friend!")
-
-# If the weapon rolled is not a Fist, print out "Thank goodness you didn't roll the Fist..."
-if weapons[weaponRoll - 1] != "Fist":
-    print("--- Thank goodness you didn't roll the Fist...")
-
-# Roll for player health points
-input("Roll the dice for your health points (Press enter)")
-health_points = random.choice(diceOptions)
-print("Player rolled " + str(health_points) + " health points")
-
-# Roll for monster health points
-input("Roll the dice for the monster's health points (Press enter)")
-m_health_points = random.choice(diceOptions)
-print("Player rolled " + str(m_health_points) + " health points for the monster")
-
-input("Analyze the roll (Press enter)")
-# Compare Player vs Monster's strength
-print("--- You are matched in strength: " + str(combat_strength == m_combat_strength))
-
-# Check the Player's overall strength and health
-print("--- You have a strong player: " + str((combat_strength + health_points) >= 15))
-
-# Lab 04 - Q2
-# Roll for the Monster's Power
-input("Roll for the Monster's Magic Power (Press Enter)")
-power_roll = random.choice(["Fire Magic", "Freezing Time", "Super Hearing"])
-
-# Lab 04 - Q3
-# Increase the Monster Combat Strength by it's Power
-m_combat_strength = min(6, m_combat_strength + monster_power[power_roll])
-print("The Monster Combat Strength is no "+ str(combat_strength) + "Using the " + power_roll + " magic power.")
-# github.com/sojoudian
-# Loop while the monster and the player are alive. Call fight sequence functions
-print("You meet the monster. FIGHT!!")
-while m_health_points > 0 and health_points > 0:
-
-    input("You strike first (Press Enter)")
-    m_health_points = hero_attacks(combat_strength, m_health_points)
-    if m_health_points == 0:
-        num_stars = 3
-    else:
-        input("The monster strikes (Press Enter)")
-        health_points = monster_attacks(m_combat_strength, health_points)
-        if health_points == 0:
-            num_stars = 1
-        else:
-            num_stars = 2
-
-stars = "*" * num_stars
-print("Hero gets <" + stars + "> stars")
+    if health_points == 0:
+        print("\nThe hero has been defeated. Hero receives one star.")
+        break
+#Munoim Shahriar
