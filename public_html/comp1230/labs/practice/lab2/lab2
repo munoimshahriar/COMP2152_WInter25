@@ -1,0 +1,30 @@
+<?php
+// Data types in PHP
+$employee_name = "Al Bope"; // String
+$employee_id = 23453; // Integer
+$is_active = true; // Boolean
+$employee_salaries = [40000, 60000, 80000]; // Numeric array
+
+// Associative array (AA) also called dictionary or map
+$employees = [
+    "secretary" => "Al Bope",
+    "president" => "Donna Call",
+    "treasurer" => "Julie Man"
+]; 
+
+// Output for employee details
+echo "Employee name: " . $employee_name . " Employee id: " . $employee_id . " Is active: " . $is_active . "<br>";
+
+// For-loop for numerical array
+echo "Employee Salaries: ";
+for($i = 0; $i < sizeof($employee_salaries); $i++) {
+    echo $employee_salaries[$i] . " ";
+}
+echo "<br>";
+
+// For-each loop for associative array
+echo "Employees and Roles: <br>";
+foreach($employees as $key => $value) {
+    echo "$key: $value<br>";
+}
+?>
